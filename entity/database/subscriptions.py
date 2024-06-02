@@ -1,14 +1,27 @@
+import datetime
 import logging
-from sqlalchemy import Column, String, BigInteger, Integer, DateTime
+from sqlalchemy import Column, String, Integer, DateTime
+
+from data.config import offset
 from .base import Base, BaseDB
 
 logger = logging.getLogger(__name__)
 
 
 class Subscription(Base):
+    """
+    Attributes:
+        id integer
+        description string
+        count_request integer
+        count_month integer
+        count_week integer
+        count_day integer
+        created_at datetime
+    """
     __tablename__ = "subscriptions"
 
-    id = Column(BigInteger, primary_key=True)
+    id = Column(Integer, autoincrement="auto", primary_key=True)
     description = Column(String(255), nullable=False)
     count_request = Column(Integer, nullable=False)
     count_month = Column(Integer, nullable=False)
@@ -29,6 +42,7 @@ class Subscription(Base):
 
 class Subscriptions(BaseDB):
     async def new(self, subscription: Subscription):
+        subscription.created_at = datetime.datetime.now(datetime.timezone(offset))
         await self._add_obj(subscription)
 
     async def get(self, id: int) -> Subscription | None:

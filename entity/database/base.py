@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from data.config import SQLALCHEMY_DATABASE_URI
+from data.config import SQLALCHEMY_DATABASE_URL
 
 Base = declarative_base()
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 async def create_async_database():
     global __factory
-    engine = create_async_engine(SQLALCHEMY_DATABASE_URI)
+    engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
     if __factory:
         return
     async with engine.begin() as conn:
@@ -29,7 +29,7 @@ async def create_async_database():
 
 async def create_factory():
     global __factory
-    engine = create_async_engine(SQLALCHEMY_DATABASE_URI)
+    engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
     __factory = sessionmaker(bind=engine, expire_on_commit=True, class_=AsyncSession)
 
 

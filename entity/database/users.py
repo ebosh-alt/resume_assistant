@@ -1,5 +1,9 @@
 import logging
+import datetime
+
 from sqlalchemy import Column, String, BigInteger, Integer, DateTime
+
+from data.config import offset
 from .base import Base, BaseDB
 
 logger = logging.getLogger(__name__)
@@ -27,6 +31,7 @@ class User(Base):
 
 class Users(BaseDB):
     async def new(self, user: User):
+        user.created_at = datetime.datetime.now(datetime.timezone(offset))
         await self._add_obj(user)
 
     async def get(self, id: int) -> User | None:
