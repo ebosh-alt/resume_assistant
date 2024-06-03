@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import datetime
 
@@ -14,9 +15,9 @@ class User(Base):
 
     id = Column(BigInteger, primary_key=True)
     username = Column(String)
-    id_subscription = Column(Integer)
-    start_subscription = Column(DateTime)
-    thread_id = Column(BigInteger)
+    id_subscription = Column(Integer, default=None)
+    start_subscription = Column(DateTime, default=None)
+    thread_id = Column(BigInteger, default=None)
     created_at = Column(DateTime)
 
     def dict(self):
@@ -43,6 +44,13 @@ class Users(BaseDB):
 
     async def delete(self, user: User) -> None:
         await self._delete_obj(instance=user)
+
+    def __in__(self, id: int):
+        result = asyncio.run(self.in_(id))
+        return result
+
+    async def __aexit__(self, exc_type, exc, tb):
+        print ("Выход из асинхронного контекста")
 
     async def in_(self, id: int) -> User | bool:
         result = await self.get(id)

@@ -14,11 +14,6 @@ logger = logging.getLogger(__name__)
 
 async def main() -> None:
     await create_async_database()
-    await subscriptions.new(Subscription(description="string",
-                                         count_request=1,
-                                         count_month=1,
-                                         count_week=1,
-                                         count_day=1))
     for router in routers:
         dp.include_router(router)
     dp.update.middleware(middleware.Logging())
@@ -33,5 +28,5 @@ if __name__ == "__main__":
         filemode="w",
         encoding='utf-8')
 
-with suppress(KeyboardInterrupt):
-    asyncio.run(main())
+    with suppress(KeyboardInterrupt):
+        asyncio.run(main())

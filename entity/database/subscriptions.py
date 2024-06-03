@@ -1,5 +1,7 @@
 import datetime
 import logging
+
+from aiogram.types import LabeledPrice
 from sqlalchemy import Column, String, Integer, DateTime
 
 from data.config import offset
@@ -27,6 +29,7 @@ class Subscription(Base):
     count_month = Column(Integer, nullable=False)
     count_week = Column(Integer, nullable=False)
     count_day = Column(Integer, nullable=False)
+    amount = Column(Integer, nullable=False)
     created_at = Column(DateTime, nullable=False)
 
     def dict(self):
@@ -60,3 +63,19 @@ class Subscriptions(BaseDB):
         if type(result) is Subscription:
             return result
         return False
+
+    async def get_all(self):
+        result = await self._get_objects(Subscription)
+        return result
+
+    async def get_labeled_price(self) -> list[LabeledPrice]:
+        all_subscriptions: list[Subscription] = await self._get_objects(Subscription)
+        prices: list[LabeledPrice] = []
+        for subscription in all_subscriptions:
+            amount = subscription.amount * 100
+            prices.append(LabeledPrice(label=subscription.description, amount=amount))
+        return prices
+
+    async def get_all_amount(self):
+        result = await self._get_attributes(Subscription, "amount")
+        return result

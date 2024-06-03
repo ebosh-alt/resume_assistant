@@ -7,3 +7,4 @@ gen
 *.session
 *.db
 диаграмма.drawio
+__pycache__

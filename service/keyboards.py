@@ -1,9 +1,10 @@
 import logging
 
 from aiogram import types
+from aiogram.types import LabeledPrice
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
-from entity.database import accounts
+from entity.database import subscriptions, Subscription
 
 logger = logging.getLogger(__name__)
 
@@ -56,5 +57,10 @@ class Builder:
 
 
 class Keyboards:
-    ...
+    menu_kb = Builder.create_keyboard({
+        "Загрузить документы": "load_documents",
+        "Что ты умеешь?": "help"
+    })
+    load_documents_kb = Builder.create_keyboard({"Загрузить документы": "load_documents"})
+    go_payment_kb = Builder.create_keyboard({"Купить подписку": "pay_subscribe"})
 
