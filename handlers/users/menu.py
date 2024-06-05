@@ -7,6 +7,7 @@ from aiogram.types import Message, CallbackQuery
 from data.config import bot
 from entity.database import users, User
 from service.GetMessage import get_mes
+from service.keyboards import Keyboards
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -21,7 +22,8 @@ async def start(message: Message | CallbackQuery):
         await users.new(user)
     await bot.send_message(
         chat_id=id,
-        text=get_mes("menu")
+        text=get_mes("menu"),
+        reply_markup=Keyboards.menu_kb,
     )
 
 menu_rt = router

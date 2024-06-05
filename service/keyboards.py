@@ -64,3 +64,10 @@ class Keyboards:
     load_documents_kb = Builder.create_keyboard({"Загрузить документы": "load_documents"})
     go_payment_kb = Builder.create_keyboard({"Купить подписку": "pay_subscribe"})
 
+    @staticmethod
+    async def payment_kb():
+        all_subscriptions: list[Subscription] = await subscriptions.get_all()
+        buttons = {}
+        for subscription in all_subscriptions:
+            buttons[f"Купить за {subscription.amount}р"] = f"subscriptions_{subscription.id}"
+        return Builder.create_keyboard(buttons)

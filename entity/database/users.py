@@ -16,15 +16,15 @@ class User(Base):
     id = Column(BigInteger, primary_key=True)
     username = Column(String)
     id_subscription = Column(Integer, default=None)
-    start_subscription = Column(DateTime, default=None)
-    thread_id = Column(BigInteger, default=None)
+    end_subscription = Column(DateTime, default=None)
+    thread_id = Column(String, default=None)
     created_at = Column(DateTime)
 
     def dict(self):
         return {"id": self.id,
                 "username": self.username,
                 "id_subscription": self.id_subscription,
-                "start_subscription": self.start_subscription,
+                "end_subscription": self.end_subscription,
                 "thread_id": self.thread_id,
                 "created_at": self.created_at
                 }

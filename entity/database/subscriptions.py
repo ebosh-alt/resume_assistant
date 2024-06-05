@@ -19,6 +19,7 @@ class Subscription(Base):
         count_month integer
         count_week integer
         count_day integer
+        amount float
         created_at datetime
     """
     __tablename__ = "subscriptions"

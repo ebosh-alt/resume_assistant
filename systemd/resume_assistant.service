@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/my_bots/posts
-ExecStart=/my_bots/posts/venv/bin/python3 /my_bots/posts/main.py
+WorkingDirectory=/projects/resume_assistant
+ExecStart=/projects/resume_assistant/venv/bin/python3 /projects/resume_assistant/main.py
 RestartSec=10
 Restart=always
 
