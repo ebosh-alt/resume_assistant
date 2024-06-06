@@ -36,7 +36,7 @@ def download_file(file: File):
 async def download_file(message: Message, state: FSMContext):
     id = message.from_user.id
     format_file = message.document.file_name.split('.')[-1]
-    path_file = f"{BASE_PATH_PDF}{id}_{message.document.file_name}.{format_file}"
+    path_file = f"{BASE_PATH_PDF}{id}_{message.document.file_name}"
     user = await users.get(id)
 
     await bot.download(
@@ -60,11 +60,10 @@ async def download_file(message: Message, state: FSMContext):
     try:
         await bot.send_message(chat_id=id,
                                text=response,
-                               parse_mode=ParseMode.MARKDOWN_V2)
+                               parse_mode=ParseMode.MARKDOWN)
     except:
         await bot.send_message(chat_id=id,
-                               text=response,
-                               parse_mode=ParseMode.MARKDOWN_V2)
+                               text=response)
 
 
 @router.message(F.text, UserStates.communication)
