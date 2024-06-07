@@ -14,6 +14,7 @@ TZ_INFO = int(env("TZ_INFO"))
 offset = datetime.timedelta(hours=TZ_INFO)
 YKASSA_API_KEY = env("YKASSA_API_KEY")
 BASE_PATH_PDF = "D:/project/telegram_bots/resume_assistant/data/pdf/"
-FORMAT_FILES = ["pdf", "doc", "docx"]
+FORMAT_FILES = ["pdf", "doc", "docx", "txt"]
 OPENAI_API_KEY = env("OPENAI_API_KEY")
 ASSISTANT = env("ASSISTANT")
+count_free_request = 3

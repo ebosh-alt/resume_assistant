@@ -18,6 +18,7 @@ class User(Base):
     id_subscription = Column(Integer, default=None)
     end_subscription = Column(DateTime, default=None)
     thread_id = Column(String, default=None)
+    count_request = Column(Integer, default=0)
     created_at = Column(DateTime)
 
     def dict(self):
@@ -26,6 +27,7 @@ class User(Base):
                 "id_subscription": self.id_subscription,
                 "end_subscription": self.end_subscription,
                 "thread_id": self.thread_id,
+                "count_request": self.count_request,
                 "created_at": self.created_at
                 }
 
@@ -44,13 +46,6 @@ class Users(BaseDB):
 
     async def delete(self, user: User) -> None:
         await self._delete_obj(instance=user)
-
-    def __in__(self, id: int):
-        result = asyncio.run(self.in_(id))
-        return result
-
-    async def __aexit__(self, exc_type, exc, tb):
-        print ("Выход из асинхронного контекста")
 
     async def in_(self, id: int) -> User | bool:
         result = await self.get(id)

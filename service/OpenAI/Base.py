@@ -47,8 +47,8 @@ class BaseOpenAI:
                 run_id=run.id,
             )
             if user_id:
-                await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=1.5)
-            time.sleep(1.5)
+                await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=1)
+            time.sleep(1)
         return run
 
     def _get_response(self, thread) -> SyncCursorPage[ThreadMessage]:

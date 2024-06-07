@@ -13,3 +13,23 @@ def get_mes(path: str, **kwargs):
         path = path + '.md'
     tmpl = env.get_template(path)
     return tmpl.render(kwargs)
+
+
+def get_text(text: str) -> str:
+    text = text.replace("_", r"_")
+    text = text.replace("{", r"{")
+    text = text.replace("}", r"\}")
+    text = text.replace("[", r"\[")
+    text = text.replace("]", r"\]")
+    text = text.replace("<", r"\<")
+    text = text.replace(">", r"\>")
+    text = text.replace("(", r"\(")
+    text = text.replace(")", r"\)")
+    text = text.replace("#", "")
+    text = text.replace("+", r"\+")
+    text = text.replace("-", r"\-")
+    text = text.replace(".", r"\.")
+    text = text.replace("!", r"\!")
+    text = text.replace("|", r"\|")
+    text = text.replace("**", "*")
+    return text

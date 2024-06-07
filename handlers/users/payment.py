@@ -14,13 +14,21 @@ logger = logging.getLogger(__name__)
 
 
 @router.callback_query(F.data == "load_documents")
-async def no_sbp(msg: CallbackQuery):
-    id = msg.from_user.id
-    await msg.answer(text="У Вас нет действующей подписки", disable_notification=False)
-    await bot.edit_message_text(chat_id=id,
-                                message_id=msg.message.message_id,
-                                text=get_mes("subscriptions", subscriptions=await subscriptions.get_all()),
-                                reply_markup=await Keyboards.payment_kb())
+async def no_sbp(message: CallbackQuery | Message):
+    id = message.from_user.id
+    await message.answer(text="У Вас нет действующей подписки", disable_notification=False)
+    text = get_mes("subscriptions", subscriptions=await subscriptions.get_all())
+    reply_markup = await Keyboards.payment_kb()
+    if type(message) is Message:
+        await bot.send_message(chat_id=id,
+                               text=text,
+                               reply_markup=reply_markup)
+    else:
+        message_id = message.message.message_id
+        await bot.edit_message_text(chat_id=id,
+                                    message_id=message_id,
+                                    text=text,
+                                    reply_markup=reply_markup)
 
 
 @router.callback_query(F.data.contains("subscriptions_"))
