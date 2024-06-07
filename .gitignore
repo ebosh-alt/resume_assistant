@@ -8,3 +8,4 @@ gen
 *.db
 диаграмма.drawio
 __pycache__
+data/database.db
