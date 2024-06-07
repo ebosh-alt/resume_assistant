@@ -17,14 +17,14 @@ async def main() -> None:
     for router in routers:
         dp.include_router(router)
     dp.update.middleware(middleware.Logging())
-    await subscriptions.new(Subscription(
-        description="Подписка на 1 месяц",
-        count_request=100,
-        count_month=1,
-        count_week=0,
-        count_day=0,
-        amount=100
-    ))
+    # await subscriptions.new(Subscription(
+    #     description="Подписка на 1 месяц",
+    #     count_request=100,
+    #     count_month=1,
+    #     count_week=0,
+    #     count_day=0,
+    #     amount=100
+    # ))
     await dp.start_polling(bot)
 
 
