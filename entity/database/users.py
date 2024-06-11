@@ -1,10 +1,10 @@
-import asyncio
-import logging
 import datetime
+import logging
 
 from sqlalchemy import Column, String, BigInteger, Integer, DateTime
 
-from data.config import offset
+from data.config import offset, count_free_request
+from .subscriptions import Subscriptions
 from .base import Base, BaseDB
 
 logger = logging.getLogger(__name__)
@@ -52,3 +52,20 @@ class Users(BaseDB):
         if type(result) is User:
             return result
         return False
+
+    async def check_subscription(self, user: User):
+        current_date = datetime.datetime.now(datetime.timezone(offset))
+
+        if user.end_subscription is None and user.count_request == count_free_request:
+            user.end_subscription = datetime.datetime.now(datetime.timezone(offset))
+            await self.update(user)
+            return "The free subscription has expired"
+        if user.end_subscription is None:
+            return "Free subscription"
+        elif user.end_subscription.timestamp() < current_date.timestamp():
+            return "Subscription time is over"
+        elif user.id_subscription is not None:
+            subscription = await Subscriptions().get(user.id_subscription)
+            if user.count_request == subscription.count_request:
+                return "The number of requests exceeded"
+        return "There is a subscription"

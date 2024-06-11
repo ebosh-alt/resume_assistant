@@ -26,4 +26,5 @@ async def start(message: Message | CallbackQuery):
         reply_markup=Keyboards.menu_kb,
     )
 
+
 menu_rt = router

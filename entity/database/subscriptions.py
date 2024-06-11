@@ -80,3 +80,4 @@ class Subscriptions(BaseDB):
     async def get_all_amount(self):
         result = await self._get_attributes(Subscription, "amount")
         return result
+
