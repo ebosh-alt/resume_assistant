@@ -79,5 +79,5 @@ class CheckFile:
             for file in all_files:
                 path = BASE_PATH_PDF + '/' + file
                 os.remove(path)
-            logger.info("Delete files: %s" % ",".join(BASE_PATH_PDF))
+            logger.info("Delete files: %s" % ",".join(all_files))
             time.sleep(5)
