@@ -61,7 +61,13 @@ async def ask_question(message: Message):
     id = message.from_user.id
     question = message.text
     user = await users.get(id)
-    response, thread_id = await ChatGPT.get_answer(content=question, user_id=id, thread_id=user.thread_id)
+    if user.thread_id is None or user.vector_store_id is None:
+        return await bot.send_message(chat_id=id,
+                                      text="Сначала необходимо загрузить документ")
+    response, thread_id, vector_store_id = await ChatGPT.get_answer(content=question,
+                                                                    user_id=id,
+                                                                    thread_id=user.thread_id,
+                                                                    vector_store_id=user.vector_store_id)
     text = get_text(response)
     await bot.send_message(chat_id=id,
                            text=text,

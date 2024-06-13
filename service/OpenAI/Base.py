@@ -1,10 +1,11 @@
+import asyncio
 import logging
 import time
 
 from openai import OpenAI
 from aiogram.enums import ChatAction
 from openai.types.beta import Thread
-from openai.types.beta.threads import Run  # , ThreadMessage
+from openai.types.beta.threads import Run
 
 from data.config import OPENAI_API_KEY, ASSISTANT, bot
 
@@ -45,8 +46,8 @@ class BaseOpenAI:
                 run_id=run.id,
             )
             if user_id:
-                await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=1)
-            time.sleep(1)
+                await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=3)
+            await asyncio.sleep(3)
         return run
 
     def _create_vector_store(self, user_id: int):
@@ -69,12 +70,10 @@ class BaseOpenAI:
             vector_store_id=vector_store_id, files=[file_streams]
         )
         logger.info(f"Upload {file_streams}. Status: {file_batch.status}")
-        # return file_batch.status
 
     def _add_file(self, vector_store_id) -> None:
         self.client.beta.assistants.update(
             ASSISTANT,
             tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}},
         )
-        # tools=[{"type": "code_interpreter"}, {"type": "retrieval"}],
-        # file_ids=[id])
+
