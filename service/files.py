@@ -74,10 +74,10 @@ class CheckFile:
     def delete_files():
         while True:
             now = datetime.datetime.now()
-            # if now.hour == 0:
-            all_files = [f for f in listdir(BASE_PATH_PDF) if isfile(join(BASE_PATH_PDF, f))]
-            for file in all_files:
-                path = BASE_PATH_PDF + '/' + file
-                os.remove(path)
-            logger.info("Delete files: %s" % ",".join(all_files))
-            time.sleep(5)
+            if now.hour == 0:
+                all_files = [f for f in listdir(BASE_PATH_PDF) if isfile(join(BASE_PATH_PDF, f))]
+                for file in all_files:
+                    path = BASE_PATH_PDF + '/' + file
+                    os.remove(path)
+                logger.info("Delete files: %s" % ",".join(all_files))
+            time.sleep(1 * 60 * 45)
