@@ -18,7 +18,7 @@ class ClientOpenAI(BaseOpenAI):
         else:
             thread = self.client.beta.threads.retrieve(thread_id=thread_id)
             user = await users.get(user_id)
-            vector_store_id = user.vectore_store_id
+            vector_store_id = user.vector_store_id
             logger.info(f"Getting threads: {thread}")
         if file is not None:
             self._load_file(file, vector_store_id)
