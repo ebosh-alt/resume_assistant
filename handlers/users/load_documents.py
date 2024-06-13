@@ -27,31 +27,31 @@ async def load_documents(message: Message | CallbackQuery, state: FSMContext):
     await state.set_state(UserStates.communication)
 
 
-@router.message(F.document, AcceptableFileFormat(), AllowedLenFile(),  ThereSubscription(), UserStates.communication)
+@router.message(F.document, AcceptableFileFormat(), AllowedLenFile(), ThereSubscription(), UserStates.communication)
 async def valid_file(message: Message):
     id = message.from_user.id
     user = await users.get(id)
     path_file = f"{BASE_PATH_PDF}{id}_{message.document.file_name}"
-    # with open(path_file, "rb") as file:
-    #     if user.thread_id is None:
-    #         response, thread_id = await ChatGPT.get_answer(file=file,
-    #                                                        user_id=id,
-    #                                                        content="Проанализируй документ")
-    #         user.thread_id = thread_id
-    #     else:
-    #         response, thread_id = await ChatGPT.get_answer(file=file,
-    #                                                        user_id=id,
-    #                                                        thread_id=user.thread_id,
-    #                                                        content="Проанализируй документ")
+    with open(path_file, "rb") as file:
+        if user.thread_id is None:
+            response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
+                                                                            user_id=id,
+                                                                            content="Проанализируй документ")
+            user.thread_id = thread_id
+            user.vector_store_id = vector_store_id
+        else:
+            response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
+                                                                            user_id=id,
+                                                                            thread_id=user.thread_id,
+                                                                            content="Проанализируй документ")
 
-    # text = get_text(response)
-    text = "text"
+    text = get_text(response)
     user.count_request += 1
     await users.update(user)
     await bot.send_message(chat_id=id,
                            text=text,
                            parse_mode=ParseMode.MARKDOWN_V2)
-    # logger.info(f"Get response: {response}")
+    logger.info(f"Get response: {response}")
 
     # os.remove(path_file)
 

@@ -8,5 +8,10 @@ gen
 *.db
 диаграмма.drawio
 __pycache__
+/data/database.db
 data/database.db
 log.logging
+/data/pdf/*.pdf
+/data/pdf/*.docx
+/data/pdf/*.txt
+test.py

@@ -19,7 +19,7 @@ async def main() -> None:
     dp.update.middleware(middleware.Logging())
     await subscriptions.new(Subscription(
         description="Подписка на 1 месяц, доступно 30 запросов в месяц",
-        count_request=1,
+        count_request=30,
         count_month=1,
         count_week=0,
         count_day=0,

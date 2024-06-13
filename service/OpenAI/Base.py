@@ -3,10 +3,8 @@ import time
 
 import openai
 from aiogram.enums import ChatAction
-from openai.pagination import SyncCursorPage
-from openai.types import FileObject
 from openai.types.beta import Thread
-from openai.types.beta.threads import Run, ThreadMessage
+from openai.types.beta.threads import Run  # , ThreadMessage
 
 from data.config import OPENAI_API_KEY, ASSISTANT, bot
 
@@ -51,7 +49,11 @@ class BaseOpenAI:
             time.sleep(1)
         return run
 
-    def _get_response(self, thread) -> SyncCursorPage[ThreadMessage]:
+    def _create_vector_store(self, user_id: int):
+        vector_store = self.client.beta.vector_stores.create(name=str(user_id))
+        return vector_store.id
+
+    def _get_response(self, thread):  # -> SyncCursorPage[ThreadMessage]:
         return self.client.beta.threads.messages.list(thread_id=thread.id, order="asc")
 
     def _new_threads(self) -> Thread:
@@ -59,14 +61,20 @@ class BaseOpenAI:
         logger.info(f"Created new threads: {thread}")
         return thread
 
-    def _load_file(self, file) -> FileObject:
-        file = self.client.files.create(
-            file=file,
-            purpose="assistants")
-        return file
+    def _load_file(self, file_streams, vector_store_id: str):
+        # file = self.client.files.create(
+        #     file=file,
+        #     purpose="assistants")
+        file_batch = self.client.beta.vector_stores.file_batches.upload_and_poll(
+            vector_store_id=vector_store_id, files=[file_streams]
+        )
+        logger.info(f"Upload {file_streams}. Status: {file_batch.status}")
+        # return file_batch.status
 
-    def _add_file(self, id) -> None:
+    def _add_file(self, vector_store_id) -> None:
         self.client.beta.assistants.update(
             ASSISTANT,
-            tools=[{"type": "code_interpreter"}, {"type": "retrieval"}],
-            file_ids=[id])
+            tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}},
+        )
+        # tools=[{"type": "code_interpreter"}, {"type": "retrieval"}],
+        # file_ids=[id])
