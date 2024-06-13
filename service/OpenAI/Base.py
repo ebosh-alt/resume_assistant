@@ -1,7 +1,7 @@
 import logging
 import time
 
-import openai
+from openai import OpenAI
 from aiogram.enums import ChatAction
 from openai.types.beta import Thread
 from openai.types.beta.threads import Run  # , ThreadMessage
@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 class BaseOpenAI:
     def __init__(self):
-        self.client = openai
-        self.client.api_key = OPENAI_API_KEY
+        self.client = OpenAI(api_key=OPENAI_API_KEY)
+        # self.client.api_key = OPENAI_API_KEY
 
     def _request(self, thread_id: str, content: str) -> Run:
         self.client.beta.threads.messages.create(
