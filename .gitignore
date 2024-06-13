@@ -11,7 +11,8 @@ __pycache__
 /data/database.db
 data/database.db
 log.logging
-/data/pdf/*.pdf
+#/data/pdf/*.pdf
 /data/pdf/*.docx
 /data/pdf/*.txt
+/data/pdf/*.doc
 test.py
