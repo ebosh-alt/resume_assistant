@@ -1,7 +1,24 @@
+import datetime
+import logging
+import os
+import time
 import zipfile
 from xml.etree import ElementTree
 
 import pdfplumber
+from multiprocessing import Process
+from os import listdir
+from os.path import isfile, join
+
+from data.config import BASE_PATH_PDF
+
+logger = logging.getLogger(__name__)
+
+
+class BG:
+    def __init__(self, ta) -> None:
+        self.process = Process()
+        self.pid = self.process.pid
 
 
 class CheckFile:
@@ -52,3 +69,15 @@ class CheckFile:
                     continue
                 total += 1
         return total
+
+    @staticmethod
+    def delete_files():
+        while True:
+            now = datetime.datetime.now()
+            # if now.hour == 0:
+            all_files = [f for f in listdir(BASE_PATH_PDF) if isfile(join(BASE_PATH_PDF, f))]
+            for file in all_files:
+                path = BASE_PATH_PDF + '/' + file
+                os.remove(path)
+            logger.info("Delete files: %s" % ",".join(BASE_PATH_PDF))
+            time.sleep(5)

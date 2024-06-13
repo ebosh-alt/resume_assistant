@@ -2,12 +2,13 @@ import asyncio
 import logging
 
 from contextlib import suppress
+from multiprocessing import Process
 
 from data.config import dp, bot
 from entity.database import subscriptions, Subscription
 from entity.database.base import create_async_database
 from handlers import routers
-from service import middleware
+from service import middleware, CheckFile
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,8 @@ async def main() -> None:
         count_day=0,
         amount=100
     ))
+    bg_proc = Process(target=CheckFile.delete_files)
+    bg_proc.start()
     await dp.start_polling(bot)
 
 
