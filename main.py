@@ -19,6 +19,14 @@ async def main() -> None:
         dp.include_router(router)
     dp.update.middleware(middleware.Logging())
     await subscriptions.new(Subscription(
+        description="Подписка на 2 месяц, доступно 60 запросов в месяц",
+        count_request=60,
+        count_month=2,
+        count_week=0,
+        count_day=0,
+        amount=200
+    ))
+    await subscriptions.new(Subscription(
         description="Подписка на 1 месяц, доступно 30 запросов в месяц",
         count_request=30,
         count_month=1,
