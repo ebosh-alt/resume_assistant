@@ -8,12 +8,11 @@ from aiogram.enums import ChatAction
 from openai.pagination import SyncCursorPage
 from openai.types import FileObject
 from openai.types.beta import Thread
-from openai.types.beta.threads import Run, ThreadMessage
 import threading
 from data.config import OPENAI_API_KEY, ASSISTANT, bot
-
-logger = logging.getLogger(__name__)
-
+async def main():
+    task = asyncio.create_task(start())
+    await task
 
 def get_text(text: str) -> str:
     text = text.replace("_", r"_")
@@ -40,7 +39,7 @@ class BaseOpenAI:
         self.client = openai
         self.client.api_key = OPENAI_API_KEY
 
-    def _request(self, thread_id: str, content: str) -> Run:
+    def _request(self, thread_id: str, content: str):
         self.client.beta.threads.messages.create(
             thread_id=thread_id,
             role="user",
@@ -62,7 +61,7 @@ class BaseOpenAI:
                 text = f"{message.content[0].text.value}"
         return text
 
-    def _wait_on_run(self, run, thread) -> Run:
+    def _wait_on_run(self, run, thread):
         while run.status == "queued" or run.status == "in_progress":
             run = self.client.beta.threads.runs.retrieve(
                 thread_id=thread.id,
@@ -71,7 +70,7 @@ class BaseOpenAI:
             time.sleep(1)
         return run
 
-    def _get_response(self, thread) -> SyncCursorPage[ThreadMessage]:
+    def _get_response(self, thread):
         return self.client.beta.threads.messages.list(thread_id=thread.id, order="asc")
 
     def new_threads(self) -> Thread:
@@ -198,24 +197,15 @@ async def start():
 
     print(time.time() - now)
 
-
-async def main():
-    task = asyncio.create_task(start())
-    await task
-
-
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,
-        filename="stress.logging",
+        # filename="stress.logging",
         format=u'%(filename)s:%(lineno)d #%(levelname)-3s [%(asctime)s] - %(message)s',
         filemode="w",
         encoding='utf-8')
-
     with suppress(KeyboardInterrupt):
         asyncio.run(main())
-
-
 """
 100 запросов с промежутком запуска в 10 секунд прошли успешно, время выполнения: 1000.098965883255
 100 запросов с промежутком запуска в 5 секунд прошли успешно, время выполнения: 500.0737955570221

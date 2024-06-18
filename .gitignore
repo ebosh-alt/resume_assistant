@@ -16,3 +16,4 @@ log.logging
 /data/pdf/*.txt
 /data/pdf/*.doc
 test.py
+stress.py

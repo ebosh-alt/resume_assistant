@@ -31,7 +31,7 @@ async def load_documents(message: Message | CallbackQuery, state: FSMContext):
 async def valid_file(message: Message):
     id = message.from_user.id
     user = await users.get(id)
-    path_file = f"{BASE_PATH_PDF}{id}_{message.document.file_name}"
+    path_file = f"{BASE_PATH_PDF}{id}_{message.document.file_name}".replace(".doc", ".docx")
     with open(path_file, "rb") as file:
         if user.thread_id is None:
             response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
@@ -50,10 +50,8 @@ async def valid_file(message: Message):
     await users.update(user)
     await bot.send_message(chat_id=id,
                            text=text,
-                           parse_mode=ParseMode.MARKDOWN_V2)
-    logger.info(f"Get response: {response}")
-
-    # os.remove(path_file)
+                           parse_mode=ParseMode.MARKDOWN)
+    logger.info(f"Get text: {text}")
 
 
 @router.message(F.text, UserStates.communication, ThereSubscription())

@@ -14,7 +14,7 @@ TZ_INFO = int(env("TZ_INFO"))
 offset = datetime.timedelta(hours=TZ_INFO)
 YKASSA_API_KEY = env("YKASSA_API_KEY")
 BASE_PATH_PDF = "./data/pdf/"
-FORMAT_FILES = ["pdf", "docx", "txt"]
+FORMAT_FILES = ["pdf", "docx", "txt", "doc"]
 OPENAI_API_KEY = env("OPENAI_API_KEY")
 ASSISTANT = env("ASSISTANT")
 count_free_request = 3

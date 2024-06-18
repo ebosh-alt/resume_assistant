@@ -48,11 +48,16 @@ class AcceptableFileFormat(Filter):
 class AllowedLenFile(Filter):
     async def __call__(self, message: Message, event_from_user: User) -> bool:
         path_file = f"{BASE_PATH_PDF}{event_from_user.id}_{message.document.file_name}"
+        format_file = message.document.file_name.split('.')[-1]
         await bot.download(
             message.document,
             destination=path_file)
         logger.info("Downloaded file")
-        len_file = Files.len(path=path_file)
+        if format_file == "doc":
+            Files.convert_doc_to_docx(path_file)
+            path_file = path_file.replace(".doc", ".docx")
+        len_file = Files.len(path_file=path_file)
+        logger.info(f"len {path_file}: {len_file}")
         if len_file <= allowed_file_len:
             return True
         return await now_allowed_len_file(message)
