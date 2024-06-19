@@ -54,7 +54,7 @@ class BaseOpenAI:
         vector_store = self.client.beta.vector_stores.create(name=str(user_id))
         return vector_store.id
 
-    def _get_response(self, thread):  # -> SyncCursorPage[ThreadMessage]:
+    def _get_response(self, thread):
         return self.client.beta.threads.messages.list(thread_id=thread.id, order="asc")
 
     def _new_threads(self) -> Thread:

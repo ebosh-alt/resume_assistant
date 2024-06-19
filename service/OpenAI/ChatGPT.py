@@ -21,7 +21,7 @@ class ClientOpenAI(BaseOpenAI):
         else:
             thread = self.client.beta.threads.retrieve(thread_id=thread_id)
             vector_store_id = self.client.beta.vector_stores.retrieve(vector_store_id=vector_store_id)
-        #     logger.info(f"Getting threads: {thread}")
+            logger.info(f"Getting threads: {thread}")
         if file is not None:
             self._load_file(file, vector_store_id)
             self._add_file(vector_store_id)
