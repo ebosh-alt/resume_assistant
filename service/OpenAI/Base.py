@@ -35,7 +35,8 @@ class BaseOpenAI:
             if message.assistant_id is None:
                 continue
             if message.run_id == run_id:
-                text = f"{message.content[-1].text.value}"
+                print(message.content)
+                text = f"{message.content[0].text.value}"
                 # print(message.content[-1].text.value)
         return text
 
