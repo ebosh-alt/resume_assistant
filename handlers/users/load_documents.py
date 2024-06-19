@@ -51,7 +51,7 @@ async def valid_file(message: Message):
         count_message = len(text) // 2
         for i in range(count_message):
             await bot.send_message(chat_id=id,
-                                   text=text[i * 2048:(i + 1) * 2048],
+                                   text=text[i * 4096:(i + 1) * 4096],
                                    parse_mode=ParseMode.MARKDOWN_V2)
     else:
         await bot.send_message(chat_id=id,
