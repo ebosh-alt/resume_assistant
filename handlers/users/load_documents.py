@@ -59,9 +59,6 @@ async def valid_file(message: Message):
                                    text=text,
                                    parse_mode=ParseMode.MARKDOWN_V2)
     except TelegramBadRequest:
-        await bot.send_message(chat_id=id,
-                               text="Не уверены, что проанализировали документ правильно, если это так, то пришлите его ещё раз."
-                                    "Ваши лимиты не были расходованы на этот запрос")
         text = rm_symbol_text(response)
         if len(text) > 4096:
             count_message = len(text) // 4096

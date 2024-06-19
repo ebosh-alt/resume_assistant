@@ -47,7 +47,8 @@ class BaseOpenAI:
                 run_id=run.id,
             )
             if user_id:
-                await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=3)
+                print(user_id)
+                await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=5)
             await asyncio.sleep(3)
         return run
 
