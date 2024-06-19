@@ -3,8 +3,9 @@ import logging
 
 from openai import OpenAI
 from aiogram.enums import ChatAction
+from openai.pagination import SyncCursorPage
 from openai.types.beta import Thread
-from openai.types.beta.threads import Run
+from openai.types.beta.threads import Run, Message
 
 from data.config import OPENAI_API_KEY, ASSISTANT, bot
 
@@ -28,16 +29,16 @@ class BaseOpenAI:
         return run
 
     @staticmethod
-    def _get_text(messages, run_id) -> str:
+    def _get_text(messages: SyncCursorPage[Message], run_id) -> str:
         text = ""
         # logger.info(f"Message: {messages}")
         print(messages)
         # for message in messages:
         #     if message.assistant_id is None:
         #         continue
-            # if message.run_id == run_id:
-            #     print(message.content)
-        text = f"{messages[0].content[0].text.value}"
+        # if message.run_id == run_id:
+        #     print(message.content)
+        text = f"{messages.data[0].content[0].text.value}"
         return text
 
     async def _wait_on_run(self, run, thread, user_id: int = None) -> Run:
@@ -55,7 +56,7 @@ class BaseOpenAI:
         vector_store = self.client.beta.vector_stores.create(name=str(user_id))
         return vector_store.id
 
-    def _get_response(self, thread):
+    def _get_response(self, thread) -> SyncCursorPage[Message]:
         return self.client.beta.threads.messages.list(thread_id=thread.id, order="asc")
 
     def _new_threads(self) -> Thread:
