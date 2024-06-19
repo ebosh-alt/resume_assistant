@@ -33,11 +33,17 @@ async def valid_file(message: Message):
     user = await users.get(id)
     path_file = f"{BASE_PATH_PDF}{id}_{message.document.file_name}".replace(".doc", ".docx")
     with open(path_file, "rb") as file:
-        response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
-                                                                        user_id=id,
-                                                                        content="Проанализируй документ")
-        user.thread_id = thread_id
-        user.vector_store_id = vector_store_id
+        if user.thread_id is None:
+            response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
+                                                                            user_id=id,
+                                                                            content=f"Проанализируй документ {id}_{message.document.file_name}")
+            user.thread_id = thread_id
+            user.vector_store_id = vector_store_id
+        else:
+            response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
+                                                                            user_id=id,
+                                                                            thread_id=user.thread_id,
+                                                                            content=f"Проанализируй документ {id}_{message.document.file_name}")
 
     text = get_text(response)
     logger.info(f"Get text: {text}")

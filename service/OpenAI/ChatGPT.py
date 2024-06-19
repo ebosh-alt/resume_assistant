@@ -9,18 +9,16 @@ from service.OpenAI.Base import BaseOpenAI
 logger = logging.getLogger(__name__)
 
 
-### векторное хранилище нужно создавать под каждый файл
-
 class ClientOpenAI(BaseOpenAI):
-    async def get_answer(self, user_id, content: str, file=None, thread_id=None, vector_store_id=None) -> tuple[
-                                                                                                        str, str, str]:
+    async def get_answer(self, user_id, content: str, file=None, thread_id=None, vector_store_id=None) -> tuple[str, str, str]:
         await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
-        if thread_id is None:
+        if thread_id is None and vector_store_id is None:
             thread = self._new_threads()
             vector_store_id = self._create_vector_store(user_id)
         else:
             thread = self.client.beta.threads.retrieve(thread_id=thread_id)
-            vector_store_id = self.client.beta.vector_stores.retrieve(vector_store_id=vector_store_id)
+            user = await users.get(user_id)
+            vector_store_id = user.vector_store_id
             logger.info(f"Getting threads: {thread}")
         if file is not None:
             self._load_file(file, vector_store_id)

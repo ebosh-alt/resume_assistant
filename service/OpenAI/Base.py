@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 class BaseOpenAI:
     def __init__(self):
         self.client = OpenAI(api_key=OPENAI_API_KEY)
-        # self.client.api_key = OPENAI_API_KEY
 
     def _request(self, thread_id: str, content: str) -> Run:
         self.client.beta.threads.messages.create(
@@ -73,4 +72,3 @@ class BaseOpenAI:
             ASSISTANT,
             tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}},
         )
-
