@@ -13,14 +13,14 @@ class ClientOpenAI(BaseOpenAI):
     async def get_answer(self, user_id, content: str, file=None, thread_id=None, vector_store_id=None) -> tuple[
         str, str, str]:
         await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
-        if vector_store_id is None:
+        if thread_id is None:
             thread = self._new_threads()
             vector_store_id = self._create_vector_store(user_id)
         else:
-            # thread = self.client.beta.threads.retrieve(thread_id=thread_id)
-            thread = self._new_threads()
+            thread = self.client.beta.threads.retrieve(thread_id=thread_id)
             # user = await users.get(user_id)
-            vector_store_id = vector_store_id
+            # vector_store_id = user.vector_store_id
+            vector_store_id = self._create_vector_store(user_id)
             logger.info(f"Getting threads: {thread}")
         if file is not None:
             self._load_file(file, vector_store_id)
