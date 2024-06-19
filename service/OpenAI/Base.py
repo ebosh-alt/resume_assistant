@@ -32,6 +32,7 @@ class BaseOpenAI:
     def _get_text(messages: SyncCursorPage[Message], run_id) -> str:
         text = ""
         # logger.info(f"Message: {messages}")
+        print(messages.data)
         for message in messages:
             if message.assistant_id is None:
                 continue
