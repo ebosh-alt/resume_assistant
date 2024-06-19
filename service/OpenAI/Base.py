@@ -41,12 +41,12 @@ class BaseOpenAI:
 
     async def _wait_on_run(self, run, thread, user_id: int = None) -> Run:
         print(user_id)
-        # while run.status != "complete":
         while run.status == "queued" or run.status == "in_progress":
             run = self.client.beta.threads.runs.retrieve(
                 thread_id=thread.id,
                 run_id=run.id,
             )
+            logger.info(f"Status run: {run.status}")
             if user_id is not None:
                 logger.info(user_id)
                 await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=3)
