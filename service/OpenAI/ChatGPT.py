@@ -21,9 +21,9 @@ class ClientOpenAI(BaseOpenAI):
             vector_store_id = user.vector_store_id
             logger.info(f"Getting threads: {thread}")
         if file is not None:
-            self._load_file(file, vector_store_id)
-            self._add_file(vector_store_id)
-
+            # self._load_file(file, vector_store_id)
+            # self._add_file(vector_store_id)
+            self.new_load_file(file)
         run = self._request(thread_id=thread.id, content=content)
         run = await self._wait_on_run(run, thread, user_id)
         return self._get_text(self._get_response(thread), run.id), thread.id, vector_store_id
