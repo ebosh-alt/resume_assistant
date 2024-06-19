@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import time
 
 from openai import OpenAI
 from aiogram.enums import ChatAction
@@ -47,9 +46,8 @@ class BaseOpenAI:
             )
             logger.info(f"Status run: {run.status}")
             if run.status == "failed":
-                logger.info(f"Error: {run.last_error}")
-                logger.info(f"Error: {run.failed_at}")
-
+                logger.info(f"Run failed: {run.last_error}")
+                return run
             if user_id is not None:
                 logger.info(user_id)
                 await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=3)

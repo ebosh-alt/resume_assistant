@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from aiogram.enums import ChatAction
@@ -10,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class ClientOpenAI(BaseOpenAI):
-    async def get_answer(self, user_id, content: str, file=None, thread_id=None, vector_store_id=None) -> tuple[str, str, str]:
+    async def get_answer(self, user_id, content: str, file=None, thread_id=None, vector_store_id=None)\
+            -> tuple[str, str, str]:
         await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
         if thread_id is None and vector_store_id is None:
             thread = self._new_threads()
@@ -21,9 +23,13 @@ class ClientOpenAI(BaseOpenAI):
             vector_store_id = user.vector_store_id
             logger.info(f"Getting threads: {thread}")
         if file is not None:
-            # self._load_file(file, vector_store_id)
-            # self._add_file(vector_store_id)
             self.new_load_file(file)
         run = self._request(thread_id=thread.id, content=content)
         run = await self._wait_on_run(run, thread, user_id)
+        if run.status == "failed":
+            if run.last_error.code == "rate_limit_exceeded":
+                await asyncio.sleep(10)
+                await self.get_answer(user_id, content, file, thread_id, vector_store_id)
+            else:
+                return "Извините, произошла ошибка. Попробуйте чуть позже", thread.id, vector_store_id
         return self._get_text(self._get_response(thread), run.id), thread.id, vector_store_id

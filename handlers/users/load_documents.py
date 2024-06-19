@@ -10,12 +10,11 @@ from data.config import bot, BASE_PATH_PDF
 from entity.database import users
 from pkg.Filters import ThereSubscription, AcceptableFileFormat, AllowedLenFile
 from pkg.states import UserStates
-from service.GetMessage import get_mes, get_text, rm_symbol_text
+from service.GetMessage import get_mes, get_text, rm_symbol_text, send_mes
 from service.OpenAI import ChatGPT
 
 router = Router()
 logger = logging.getLogger(__name__)
-
 
 @router.callback_query(F.data == "load_documents", ThereSubscription())
 async def load_documents(message: Message | CallbackQuery, state: FSMContext):
@@ -45,29 +44,8 @@ async def valid_file(message: Message):
                                                                             content=f"Проанализируй документ {message.document.file_name}")
     user.thread_id = thread_id
     user.vector_store_id = vector_store_id
-    text = get_text(response)
-    logger.info(f"Get text: {text}")
-    try:
-        if len(text) > 4096:
-            count_message = len(text) // 4096
-            for i in range(count_message + 1):
-                await bot.send_message(chat_id=id,
-                                       text=text[i * 4096:(i + 1) * 4096],
-                                       parse_mode=ParseMode.MARKDOWN_V2)
-        else:
-            await bot.send_message(chat_id=id,
-                                   text=text,
-                                   parse_mode=ParseMode.MARKDOWN_V2)
-    except TelegramBadRequest:
-        text = rm_symbol_text(response)
-        if len(text) > 4096:
-            count_message = len(text) // 4096
-            for i in range(count_message + 1):
-                await bot.send_message(chat_id=id,
-                                       text=text[i * 4096:(i + 1) * 4096])
-        else:
-            await bot.send_message(chat_id=id,
-                                   text=text)
+    logger.info(f"Get text: {response}")
+    await send_mes(id, response)
     user.count_request += 1
     await users.update(user)
 
@@ -84,18 +62,8 @@ async def ask_question(message: Message):
                                                                     user_id=id,
                                                                     thread_id=user.thread_id,
                                                                     vector_store_id=user.vector_store_id)
-    text = get_text(response)
-    logger.info(f"Get text: {text}")
-    if len(text) > 4096:
-        count_message = len(text) % 2
-        for i in range(count_message):
-            await bot.send_message(chat_id=id,
-                                   text=text[i * 4096:(i + 1) * 4096],
-                                   parse_mode=ParseMode.MARKDOWN_V2)
-    else:
-        await bot.send_message(chat_id=id,
-                               text=text,
-                               parse_mode=ParseMode.MARKDOWN_V2)
+    logger.info(f"Get text: {response}")
+    await send_mes(id, response)
 
 
 load_documents_rt = router
