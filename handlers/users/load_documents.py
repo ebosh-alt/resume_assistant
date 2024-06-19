@@ -36,7 +36,7 @@ async def valid_file(message: Message):
         if user.vector_store_id is None:
             response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
                                                                             user_id=id,
-                                                                            content="Проанализируй документ")
+                                                                            content="Проанализируй последний документ")
             user.thread_id = thread_id
             user.vector_store_id = vector_store_id
         else:
@@ -44,12 +44,12 @@ async def valid_file(message: Message):
                                                                             user_id=id,
                                                                             # thread_id=user.thread_id,
                                                                             vector_store_id=user.vector_store_id,
-                                                                            content="Проанализируй документ")
+                                                                            content="Проанализируй последний документ")
 
     text = get_text(response)
     logger.info(f"Get text: {text}")
     if len(text) > 4096:
-        count_message = len(text) % 2
+        count_message = len(text) // 4096
         print(count_message)
         for i in range(count_message):
             await bot.send_message(chat_id=id,
