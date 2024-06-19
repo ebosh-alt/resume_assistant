@@ -75,9 +75,17 @@ async def ask_question(message: Message):
                                                                     thread_id=user.thread_id,
                                                                     vector_store_id=user.vector_store_id)
     text = get_text(response)
-    await bot.send_message(chat_id=id,
-                           text=text,
-                           parse_mode=ParseMode.MARKDOWN_V2)
+    logger.info(f"Get text: {text}")
+    if len(text) > 4096:
+        count_message = len(text) % 2
+        for i in range(count_message):
+            await bot.send_message(chat_id=id,
+                                   text=text[i * 4096:(i + 1) * 4096],
+                                   parse_mode=ParseMode.MARKDOWN_V2)
+    else:
+        await bot.send_message(chat_id=id,
+                               text=text,
+                               parse_mode=ParseMode.MARKDOWN_V2)
 
 
 load_documents_rt = router
