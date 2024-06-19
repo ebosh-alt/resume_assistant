@@ -38,14 +38,13 @@ async def valid_file(message: Message):
             response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
                                                                             user_id=id,
                                                                             content=f"Проанализируй документ {message.document.file_name}")
-            user.thread_id = thread_id
-            user.vector_store_id = vector_store_id
         else:
             response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
                                                                             user_id=id,
                                                                             thread_id=user.thread_id,
                                                                             content=f"Проанализируй документ {message.document.file_name}")
-
+    user.thread_id = thread_id
+    user.vector_store_id = vector_store_id
     text = get_text(response)
     logger.info(f"Get text: {text}")
     try:
