@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import time
 
 from openai import OpenAI
 from aiogram.enums import ChatAction
@@ -31,13 +30,13 @@ class BaseOpenAI:
     @staticmethod
     def _get_text(messages, run_id) -> str:
         text = ""
-        logger.info(f"Message: {messages}")
+        # logger.info(f"Message: {messages}")
         for message in messages:
             if message.assistant_id is None:
                 continue
             if message.run_id == run_id:
-                text = f"{message.content[0].text.value}"
-                print(message.content[-1].text.value)
+                text = f"{message.content[-1].text.value}"
+                # print(message.content[-1].text.value)
         return text
 
     async def _wait_on_run(self, run, thread, user_id: int = None) -> Run:
