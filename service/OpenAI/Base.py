@@ -31,8 +31,6 @@ class BaseOpenAI:
     @staticmethod
     def _get_text(messages: SyncCursorPage[Message], run_id) -> str:
         text = ""
-        # logger.info(f"Message: {messages}")
-        print(messages.data)
         for message in messages:
             if message.assistant_id is None:
                 continue
@@ -46,8 +44,8 @@ class BaseOpenAI:
                 thread_id=thread.id,
                 run_id=run.id,
             )
-            if user_id:
-                print(user_id)
+            if user_id is not None:
+                logger.info(user_id)
                 await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=5)
             await asyncio.sleep(3)
         return run
