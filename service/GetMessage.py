@@ -35,3 +35,23 @@ def get_text(text: str) -> str:
     text = text.replace("**", "*")
     return text
 
+
+def rm_symbol_text(text: str) -> str:
+    text = text.replace("_", "")
+    text = text.replace("{", "")
+    text = text.replace("}", "}")
+    text = text.replace("[", "[")
+    text = text.replace("]", "]")
+    text = text.replace("<", "<")
+    text = text.replace(">", ">")
+    text = text.replace("(", "(")
+    text = text.replace(")", ")")
+    text = text.replace("#", "")
+    text = text.replace("+", "+")
+    text = text.replace("-", "-")
+    text = text.replace(".", ".")
+    text = text.replace("!", "!")
+    text = text.replace("=", "=")
+    text = text.replace("|", "|")
+    text = text.replace("*", "")
+    return text

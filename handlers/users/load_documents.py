@@ -2,6 +2,7 @@ import logging
 
 from aiogram import Router, F
 from aiogram.enums import ParseMode
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
@@ -9,7 +10,7 @@ from data.config import bot, BASE_PATH_PDF
 from entity.database import users
 from pkg.Filters import ThereSubscription, AcceptableFileFormat, AllowedLenFile
 from pkg.states import UserStates
-from service.GetMessage import get_mes, get_text
+from service.GetMessage import get_mes, get_text, rm_symbol_text
 from service.OpenAI import ChatGPT
 
 router = Router()
@@ -47,16 +48,32 @@ async def valid_file(message: Message):
 
     text = get_text(response)
     logger.info(f"Get text: {text}")
-    if len(text) > 4096:
-        count_message = len(text) // 4096
-        for i in range(count_message + 1):
+    try:
+        if len(text) > 4096:
+            count_message = len(text) // 4096
+            for i in range(count_message + 1):
+                await bot.send_message(chat_id=id,
+                                       text=text[i * 4096:(i + 1) * 4096],
+                                       parse_mode=ParseMode.MARKDOWN_V2)
+        else:
             await bot.send_message(chat_id=id,
-                                   text=text[i * 4096:(i + 1) * 4096],
+                                   text=text,
                                    parse_mode=ParseMode.MARKDOWN_V2)
-    else:
+    except TelegramBadRequest:
         await bot.send_message(chat_id=id,
-                               text=text,
-                               parse_mode=ParseMode.MARKDOWN_V2)
+                               text="Не уверены, что проанализировали документ правильно, если это так, то пришлите его ещё раз."
+                                    "Ваши лимиты не были расходованы на этот запрос")
+        text = rm_symbol_text(response)
+        if len(text) > 4096:
+            count_message = len(text) // 4096
+            for i in range(count_message + 1):
+                await bot.send_message(chat_id=id,
+                                       text=text[i * 4096:(i + 1) * 4096],
+                                       parse_mode=ParseMode.MARKDOWN_V2)
+        else:
+            await bot.send_message(chat_id=id,
+                                   text=text,
+                                   parse_mode=ParseMode.MARKDOWN_V2)
     user.count_request += 1
     await users.update(user)
 
