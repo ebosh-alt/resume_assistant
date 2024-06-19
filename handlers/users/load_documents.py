@@ -52,11 +52,11 @@ async def valid_file(message: Message):
         for i in range(count_message):
             await bot.send_message(chat_id=id,
                                    text=text[i * 2048:(i + 1) * 2048],
-                                   parse_mode=ParseMode.MARKDOWN)
+                                   parse_mode=ParseMode.MARKDOWN_V2)
     else:
         await bot.send_message(chat_id=id,
                                text=text,
-                               parse_mode=ParseMode.MARKDOWN)
+                               parse_mode=ParseMode.MARKDOWN_V2)
     user.count_request += 1
     await users.update(user)
 
