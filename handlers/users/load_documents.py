@@ -48,7 +48,7 @@ async def valid_file(message: Message):
     text = get_text(response)
     logger.info(f"Get text: {text}")
     if len(text) > 4096:
-        count_message = len(text) // 2
+        count_message = len(text) % 2
         print(count_message)
         for i in range(count_message):
             await bot.send_message(chat_id=id,

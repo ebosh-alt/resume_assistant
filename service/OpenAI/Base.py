@@ -41,6 +41,7 @@ class BaseOpenAI:
 
     async def _wait_on_run(self, run, thread, user_id: int = None) -> Run:
         while run.status == "queued" or run.status == "in_progress":
+            print(run)
             run = self.client.beta.threads.runs.retrieve(
                 thread_id=thread.id,
                 run_id=run.id,
