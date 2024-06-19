@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 class ClientOpenAI(BaseOpenAI):
     async def get_answer(self, user_id, content: str, file=None, thread_id=None, vector_store_id=None) -> tuple[str, str, str]:
         await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
-        print(user_id)
         if thread_id is None and vector_store_id is None:
             thread = self._new_threads()
             vector_store_id = self._create_vector_store(user_id)

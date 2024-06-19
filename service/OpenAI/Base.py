@@ -23,7 +23,7 @@ class BaseOpenAI:
             role="user",
             content=content
         )
-        run = self.client.beta.threads.runs.create_and_poll(
+        run = self.client.beta.threads.runs.create(
             thread_id=thread_id,
             assistant_id=ASSISTANT,
         )
@@ -40,7 +40,6 @@ class BaseOpenAI:
         return text
 
     async def _wait_on_run(self, run, thread, user_id: int = None) -> Run:
-        print(user_id)
         while run.status == "queued" or run.status == "in_progress":
             run = self.client.beta.threads.runs.retrieve(
                 thread_id=thread.id,
@@ -50,7 +49,7 @@ class BaseOpenAI:
             if user_id is not None:
                 logger.info(user_id)
                 await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=3)
-            time.sleep(3)
+            await asyncio.sleep(3)
         return run
 
     def _create_vector_store(self, user_id: int):
