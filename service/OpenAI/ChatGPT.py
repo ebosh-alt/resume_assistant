@@ -25,5 +25,5 @@ class ClientOpenAI(BaseOpenAI):
             self._add_file(vector_store_id)
 
         run = self._request(thread_id=thread.id, content=content)
-        await self._wait_on_run(run, thread, user_id)
+        run = await self._wait_on_run(run, thread, user_id)
         return self._get_text(self._get_response(thread), run.id), thread.id, vector_store_id
