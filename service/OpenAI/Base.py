@@ -63,9 +63,6 @@ class BaseOpenAI:
         return thread
 
     def _load_file(self, file_streams, vector_store_id: str):
-        # file = self.client.files.create(
-        #     file=file,
-        #     purpose="assistants")
         file_batch = self.client.beta.vector_stores.file_batches.upload_and_poll(
             vector_store_id=vector_store_id, files=[file_streams]
         )
