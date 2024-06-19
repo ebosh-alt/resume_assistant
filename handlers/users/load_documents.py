@@ -46,9 +46,7 @@ async def valid_file(message: Message):
                                                                             content="Проанализируй документ")
 
     text = get_text(response)
-    user.count_request += 1
     logger.info(f"Get text: {text}")
-    await users.update(user)
     if len(text) > 4096:
         count_message = len(text) // 2
         for i in range(count_message):
@@ -59,6 +57,8 @@ async def valid_file(message: Message):
         await bot.send_message(chat_id=id,
                                text=text,
                                parse_mode=ParseMode.MARKDOWN)
+    user.count_request += 1
+    await users.update(user)
 
 
 @router.message(F.text, UserStates.communication, ThereSubscription())
