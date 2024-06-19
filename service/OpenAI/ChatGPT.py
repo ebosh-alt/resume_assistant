@@ -18,8 +18,8 @@ class ClientOpenAI(BaseOpenAI):
             vector_store_id = self._create_vector_store(user_id)
         else:
             thread = self.client.beta.threads.retrieve(thread_id=thread_id)
-            # user = await users.get(user_id)
-            # vector_store_id = user.vector_store_id
+            # vector = self.client.beta.vector_stores.retrieve(vector_store_id=vector_store_id)
+            # vector_store_id = vector.id
             vector_store_id = self._create_vector_store(user_id)
             logger.info(f"Getting threads: {thread}")
         if file is not None:
