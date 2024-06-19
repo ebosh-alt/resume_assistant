@@ -16,8 +16,8 @@ def get_mes(path: str, **kwargs):
 
 
 def get_text(text: str) -> str:
-    text = text.replace("_", r"_")
-    text = text.replace("{", r"{")
+    text = text.replace("_", r"\_")
+    text = text.replace("{", r"\{")
     text = text.replace("}", r"\}")
     text = text.replace("[", r"\[")
     text = text.replace("]", r"\]")
