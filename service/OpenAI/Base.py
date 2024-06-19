@@ -46,6 +46,10 @@ class BaseOpenAI:
                 run_id=run.id,
             )
             logger.info(f"Status run: {run.status}")
+            if run.status == "failed":
+                logger.info(f"Error: {run.last_error}")
+                logger.info(f"Error: {run.failed_at}")
+
             if user_id is not None:
                 logger.info(user_id)
                 await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=3)
