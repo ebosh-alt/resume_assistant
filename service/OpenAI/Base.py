@@ -36,8 +36,8 @@ class BaseOpenAI:
             if message.assistant_id is None:
                 continue
             if message.run_id == run_id:
-                text = f"{message.content[0].text.value}"
-
+                # text = f"{message.content[0].text.value}"
+                print(message.content)
         return text
 
     async def _wait_on_run(self, run, thread, user_id: int = None) -> Run:
