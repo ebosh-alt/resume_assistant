@@ -21,7 +21,7 @@ class BaseOpenAI:
             role="user",
             content=content
         )
-        run = self.client.beta.threads.runs.create(
+        run = self.client.beta.threads.runs.create_and_poll(
             thread_id=thread_id,
             assistant_id=ASSISTANT,
         )
@@ -37,7 +37,6 @@ class BaseOpenAI:
             if message.run_id == run_id:
                 print(message.content)
                 text = f"{message.content[0].text.value}"
-                # print(message.content[-1].text.value)
         return text
 
     async def _wait_on_run(self, run, thread, user_id: int = None) -> Run:
