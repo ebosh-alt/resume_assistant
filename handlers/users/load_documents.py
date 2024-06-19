@@ -50,8 +50,7 @@ async def valid_file(message: Message):
     logger.info(f"Get text: {text}")
     if len(text) > 4096:
         count_message = len(text) // 4096
-        print(count_message)
-        for i in range(count_message):
+        for i in range(count_message+1):
             await bot.send_message(chat_id=id,
                                    text=text[i * 4096:(i + 1) * 4096],
                                    parse_mode=ParseMode.MARKDOWN_V2)
