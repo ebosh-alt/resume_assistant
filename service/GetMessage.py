@@ -30,6 +30,7 @@ def get_text(text: str) -> str:
     text = text.replace("-", r"\-")
     text = text.replace(".", r"\.")
     text = text.replace("!", r"\!")
+    text = text.replace("=", r"\=")
     text = text.replace("|", r"\|")
     text = text.replace("**", "*")
     return text
