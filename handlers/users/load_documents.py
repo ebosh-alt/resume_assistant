@@ -68,12 +68,10 @@ async def valid_file(message: Message):
             count_message = len(text) // 4096
             for i in range(count_message + 1):
                 await bot.send_message(chat_id=id,
-                                       text=text[i * 4096:(i + 1) * 4096],
-                                       parse_mode=ParseMode.MARKDOWN_V2)
+                                       text=text[i * 4096:(i + 1) * 4096])
         else:
             await bot.send_message(chat_id=id,
-                                   text=text,
-                                   parse_mode=ParseMode.MARKDOWN_V2)
+                                   text=text)
     user.count_request += 1
     await users.update(user)
 
