@@ -32,13 +32,13 @@ class BaseOpenAI:
     def _get_text(messages: SyncCursorPage[Message], run_id) -> str:
         text = ""
         # logger.info(f"Message: {messages}")
-        print(messages)
+        print(messages.data)
         # for message in messages:
         #     if message.assistant_id is None:
         #         continue
         # if message.run_id == run_id:
         #     print(message.content)
-        text = f"{messages.data[0].content[0].text.value}"
+        text = f"{messages.data[1].content[0].text.value}"
         return text
 
     async def _wait_on_run(self, run, thread, user_id: int = None) -> Run:
