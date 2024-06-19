@@ -47,11 +47,18 @@ async def valid_file(message: Message):
 
     text = get_text(response)
     user.count_request += 1
-    await users.update(user)
-    await bot.send_message(chat_id=id,
-                           text=text,
-                           parse_mode=ParseMode.MARKDOWN)
     logger.info(f"Get text: {text}")
+    await users.update(user)
+    if len(text) > 4096:
+        count_message = len(text) // 2
+        for i in range(count_message):
+            await bot.send_message(chat_id=id,
+                                   text=text[i * 2048:(i + 1) * 2048],
+                                   parse_mode=ParseMode.MARKDOWN)
+    else:
+        await bot.send_message(chat_id=id,
+                               text=text,
+                               parse_mode=ParseMode.MARKDOWN)
 
 
 @router.message(F.text, UserStates.communication, ThereSubscription())
