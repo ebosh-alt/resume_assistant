@@ -4,7 +4,6 @@ import os
 import time
 import zipfile
 from xml.etree import ElementTree
-import docx2txt
 import pdfplumber
 from os import listdir
 from os.path import isfile, join
@@ -25,8 +24,6 @@ class CheckFile:
                 return self.len_pdf(path_file)
             case "txt":
                 return self.len_txt(path_file)
-            case "doc":
-                return self.len_doc(path_file)
             case _:
                 raise ValueError(f"Invalid path_file: {path_file}")
 

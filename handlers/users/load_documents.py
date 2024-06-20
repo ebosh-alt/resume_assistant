@@ -1,8 +1,6 @@
 import logging
 
 from aiogram import Router, F
-from aiogram.enums import ParseMode
-from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
@@ -10,11 +8,12 @@ from data.config import bot, BASE_PATH_PDF
 from entity.database import users
 from pkg.Filters import ThereSubscription, AcceptableFileFormat, AllowedLenFile
 from pkg.states import UserStates
-from service.GetMessage import get_mes, get_text, rm_symbol_text, send_mes
+from service.GetMessage import get_mes, send_mes
 from service.OpenAI import ChatGPT
 
 router = Router()
 logger = logging.getLogger(__name__)
+
 
 @router.callback_query(F.data == "load_documents", ThereSubscription())
 async def load_documents(message: Message | CallbackQuery, state: FSMContext):
@@ -31,7 +30,11 @@ async def load_documents(message: Message | CallbackQuery, state: FSMContext):
 async def valid_file(message: Message):
     id = message.from_user.id
     user = await users.get(id)
-    path_file = f"{BASE_PATH_PDF}{id}_{message.document.file_name}".replace(".doc", ".docx")
+    path_file = f"{BASE_PATH_PDF}{id}_{message.document.file_name}"
+    format_file = message.document.file_name.split('.')[-1]
+    if format_file == "doc":
+        path_file = f"{BASE_PATH_PDF}{id}_{message.document.file_name}".replace(".doc", ".docx")
+
     with open(path_file, "rb") as file:
         if user.thread_id is None:
             response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
@@ -44,7 +47,7 @@ async def valid_file(message: Message):
                                                                             content=f"Проанализируй документ {message.document.file_name}")
     user.thread_id = thread_id
     user.vector_store_id = vector_store_id
-    logger.info(f"Get text: {response}")
+    logger.info(f"Get response: {response}")
     await send_mes(id, response)
     user.count_request += 1
     await users.update(user)
@@ -62,7 +65,7 @@ async def ask_question(message: Message):
                                                                     user_id=id,
                                                                     thread_id=user.thread_id,
                                                                     vector_store_id=user.vector_store_id)
-    logger.info(f"Get text: {response}")
+    logger.info(f"Get response: {response}")
     await send_mes(id, response)
 
 
