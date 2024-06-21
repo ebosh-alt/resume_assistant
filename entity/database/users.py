@@ -18,7 +18,6 @@ class User(Base):
     id_subscription = Column(Integer, default=None)
     end_subscription = Column(DateTime, default=None)
     thread_id = Column(String, default=None)
-    vector_store_id = Column(String, default=None)
     count_request = Column(Integer, default=0)
     created_at = Column(DateTime)
 
@@ -28,7 +27,6 @@ class User(Base):
                 "id_subscription": self.id_subscription,
                 "end_subscription": self.end_subscription,
                 "thread_id": self.thread_id,
-                "vector_store_id": self.vector_store_id,
                 "count_request": self.count_request,
                 "created_at": self.created_at
                 }

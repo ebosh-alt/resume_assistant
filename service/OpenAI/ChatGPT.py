@@ -1,35 +1,33 @@
-import asyncio
 import logging
 
-from aiogram.enums import ChatAction
-
-from data.config import bot
-from entity.database import users
-from service.OpenAI.Base import BaseOpenAI
+from service.OpenAI.Base import BaseClient
 
 logger = logging.getLogger(__name__)
 
 
-class ClientOpenAI(BaseOpenAI):
-    async def get_answer(self, user_id, content: str, file=None, thread_id=None, vector_store_id=None)\
-            -> tuple[str, str, str]:
-        await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
-        if thread_id is None and vector_store_id is None:
-            thread = self._new_threads()
-            vector_store_id = self._create_vector_store(user_id)
-        else:
-            thread = self.client.beta.threads.retrieve(thread_id=thread_id)
-            user = await users.get(user_id)
-            vector_store_id = user.vector_store_id
-            logger.info(f"Getting threads: {thread}")
-        if file is not None:
-            self.new_load_file(file)
-        run = self._request(thread_id=thread.id, content=content)
-        run = await self._wait_on_run(run, thread, user_id)
-        if run.status == "failed":
-            if run.last_error.code == "rate_limit_exceeded":
-                await asyncio.sleep(10)
-                await self.get_answer(user_id, content, file, thread_id, vector_store_id)
-            else:
-                return "Извините, произошла ошибка. Попробуйте чуть позже", thread.id, vector_store_id
-        return self._get_text(self._get_response(thread), run.id), thread.id, vector_store_id
+class Client(BaseClient):
+    def analysis(self, file_path, thread_id=None, user_id=None):
+        if not thread_id:
+            thread = self._create_thread()
+            thread_id = thread.id
+        with open(file_path, "rb") as f:
+            file = self._upload_file(f)
+            self._create_message(thread_id=thread_id,
+                                 content=f"Проанализируй документ. В начале пиши название файла",
+                                 file_id=file.id)
+        return self.__answer(thread_id, user_id), thread_id
+
+    def question(self, content, thread_id=None, user_id=None):
+        if not thread_id:
+            thread = self._create_thread()
+            thread_id = thread.id
+        self._create_message(thread_id=thread_id,
+                             content=content + ". В начале пиши название файла")
+        return self.__answer(thread_id, user_id), thread_id
+
+    def __answer(self, thread_id, user_id):
+        run = self._create_run(thread_id, user_id)
+        messages = self._list_message(thread_id)
+        text = self._get_text(messages, run.id)
+
+        return text

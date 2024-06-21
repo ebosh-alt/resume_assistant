@@ -35,20 +35,12 @@ async def valid_file(message: Message):
     if format_file == "doc":
         path_file = f"{BASE_PATH_PDF}{id}_{message.document.file_name}".replace(".doc", ".docx")
 
-    with open(path_file, "rb") as file:
-        if user.thread_id is None:
-            response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
-                                                                            user_id=id,
-                                                                            content=f"Проанализируй документ {message.document.file_name}")
-        else:
-            response, thread_id, vector_store_id = await ChatGPT.get_answer(file=file,
-                                                                            user_id=id,
-                                                                            thread_id=user.thread_id,
-                                                                            content=f"Проанализируй документ {message.document.file_name}")
+    answer, thread_id = await ChatGPT.analysis(path_file=path_file,
+                                               user_id=id,
+                                               thread_id=user.thread_id)
     user.thread_id = thread_id
-    user.vector_store_id = vector_store_id
-    logger.info(f"Get response: {response}")
-    await send_mes(id, response)
+    logger.info(f"Get answer: {answer}")
+    await send_mes(id, answer)
     user.count_request += 1
     await users.update(user)
 
@@ -61,12 +53,11 @@ async def ask_question(message: Message):
     if user.thread_id is None or user.vector_store_id is None:
         return await bot.send_message(chat_id=id,
                                       text="Сначала необходимо загрузить документ")
-    response, thread_id, vector_store_id = await ChatGPT.get_answer(content=question,
-                                                                    user_id=id,
-                                                                    thread_id=user.thread_id,
-                                                                    vector_store_id=user.vector_store_id)
-    logger.info(f"Get response: {response}")
-    await send_mes(id, response)
+    answer, thread_id = await ChatGPT.question(content=question,
+                                               user_id=id,
+                                               thread_id=user.thread_id)
+    logger.info(f"Get answer: {answer}")
+    await send_mes(id, answer)
 
 
 load_documents_rt = router
