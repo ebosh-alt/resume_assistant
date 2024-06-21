@@ -25,4 +25,5 @@ class Client(BaseClient):
         run = self._create_run(thread_id)
         messages = self._list_message(thread_id)
         text = self._get_text(messages, run.id)
+
         return text
