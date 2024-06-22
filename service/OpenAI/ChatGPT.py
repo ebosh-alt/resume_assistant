@@ -41,17 +41,15 @@ class Client(BaseClient):
     def test(self):
         vector_stores = self.client.beta.vector_stores.list()
         count = 0
+        # for vector_store in vector_stores:
+        #     count += 1
+        # print(count)
+        count = 0
+        # print(self._list_files())
         for vector_store in vector_stores:
-            files = self.client.beta.vector_stores.files.list(vector_store_id=vector_store.id)
-            for file in files:
-                self.client.beta.vector_stores.files.delete(file_id=file.id,
-                                                            vector_store_id=vector_store.id)
             self.client.beta.vector_stores.delete(
                 vector_store_id=vector_store.id
             )
-
-            count += 1
-            print(count)
 
 
 if __name__ == '__main__':
