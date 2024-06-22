@@ -27,8 +27,8 @@ async def main() -> None:
             count_day=0,
             amount=200
         ))
-    bg_proc = Process(target=Files.delete_files)
-    bg_proc.start()
+    # bg_proc = Process(target=Files.delete_files)
+    # bg_proc.start()
     await dp.start_polling(bot)
 
 

@@ -10,9 +10,12 @@ from openai.types import FileObject
 from openai.types.beta import Thread
 import threading
 from data.config import OPENAI_API_KEY, ASSISTANT, bot
+
+
 async def main():
     task = asyncio.create_task(start())
     await task
+
 
 def get_text(text: str) -> str:
     text = text.replace("_", r"_")
@@ -196,6 +199,7 @@ async def start():
         count += 1
 
     print(time.time() - now)
+
 
 if __name__ == "__main__":
     logging.basicConfig(

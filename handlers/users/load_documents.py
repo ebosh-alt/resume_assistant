@@ -1,6 +1,7 @@
 import logging
 
 from aiogram import Router, F
+from aiogram.enums import ChatAction
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
@@ -35,10 +36,12 @@ async def valid_file(message: Message):
     if format_file == "doc":
         path_file = f"{BASE_PATH_PDF}{id}_{message.document.file_name}".replace(".doc", ".docx")
 
-    answer, thread_id = await ChatGPT.analysis(path_file=path_file,
-                                               user_id=id,
-                                               thread_id=user.thread_id)
-    user.thread_id = thread_id
+    await bot.send_chat_action(chat_id=id, action=ChatAction.TYPING, request_timeout=3)
+    answer = await ChatGPT.analysis(path_file=path_file,
+                                    vector_store_id=user.vector_store_id,
+                                    user_id=id,
+                                    thread_id=user.thread_id)
+
     logger.info(f"Get answer: {answer}")
     await send_mes(id, answer)
     user.count_request += 1
@@ -50,12 +53,10 @@ async def ask_question(message: Message):
     id = message.from_user.id
     question = message.text
     user = await users.get(id)
-    if user.thread_id is None or user.vector_store_id is None:
-        return await bot.send_message(chat_id=id,
-                                      text="Сначала необходимо загрузить документ")
-    answer, thread_id = await ChatGPT.question(content=question,
-                                               user_id=id,
-                                               thread_id=user.thread_id)
+    await bot.send_chat_action(chat_id=id, action=ChatAction.TYPING, request_timeout=5)
+    answer = await ChatGPT.question(content=question,
+                                    user_id=id,
+                                    thread_id=user.thread_id)
     logger.info(f"Get answer: {answer}")
     await send_mes(id, answer)
 

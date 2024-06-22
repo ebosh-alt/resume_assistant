@@ -6,28 +6,54 @@ logger = logging.getLogger(__name__)
 
 
 class Client(BaseClient):
-    def analysis(self, file_path, thread_id=None, user_id=None):
-        if not thread_id:
-            thread = self._create_thread()
-            thread_id = thread.id
-        with open(file_path, "rb") as f:
+    async def analysis(self, path_file, vector_store_id, thread_id, user_id=None):
+        with open(path_file, "rb") as f:
+            self._del_copy_file(path_file=path_file, vector_store_id=vector_store_id)
             file = self._upload_file(f)
+            # files = self._list_files()
+            self._create_vector_store_file(vector_store_id=vector_store_id,
+                                           file_id=file.id)
             self._create_message(thread_id=thread_id,
-                                 content=f"Проанализируй документ. В начале пиши название файла",
+                                 content=f"Проанализируй документ."
+                                         f"Ответь на файл {file.filename} и id {file.id}, это очень важно иначе работособность проекта сильно понизиться.",
                                  file_id=file.id)
-        return self.__answer(thread_id, user_id), thread_id
+        return await self.__answer(thread_id, user_id)
 
-    def question(self, content, thread_id=None, user_id=None):
-        if not thread_id:
-            thread = self._create_thread()
-            thread_id = thread.id
+    async def question(self, content, thread_id=None, user_id=None):
         self._create_message(thread_id=thread_id,
-                             content=content + ". В начале пиши название файла")
-        return self.__answer(thread_id, user_id), thread_id
+                             content=content + ". В начале пиши id файла")
+        return await self.__answer(thread_id, user_id)
 
-    def __answer(self, thread_id, user_id):
-        run = self._create_run(thread_id, user_id)
+    async def __answer(self, thread_id, user_id):
+        run = await self._create_run(thread_id, user_id)
+        if type(run) is str:
+            return run
         messages = self._list_message(thread_id)
         text = self._get_text(messages, run.id)
-
         return text
+
+    def create_vector_store(self, user_id):
+        return self._create_vector_store(user_id)
+
+    def create_thread(self):
+        return self._create_thread()
+
+    def test(self):
+        vector_stores = self.client.beta.vector_stores.list()
+        count = 0
+        for vector_store in vector_stores:
+            files = self.client.beta.vector_stores.files.list(vector_store_id=vector_store.id)
+            for file in files:
+                self.client.beta.vector_stores.files.delete(file_id=file.id,
+                                                            vector_store_id=vector_store.id)
+            self.client.beta.vector_stores.delete(
+                vector_store_id=vector_store.id
+            )
+
+            count += 1
+            print(count)
+
+
+if __name__ == '__main__':
+    client = Client()
+    client.test()

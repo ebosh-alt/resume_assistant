@@ -17,5 +17,5 @@ BASE_PATH_PDF = "./data/pdf/"
 FORMAT_FILES = ["pdf", "docx", "txt", "doc"]
 OPENAI_API_KEY = env("OPENAI_API_KEY")
 ASSISTANT = env("ASSISTANT")
-count_free_request = 3
+count_free_request = 3000
 allowed_file_len = 30000
