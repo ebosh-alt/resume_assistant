@@ -8,20 +8,21 @@ logger = logging.getLogger(__name__)
 class Client(BaseClient):
     async def analysis(self, path_file, vector_store_id, thread_id, user_id=None):
         with open(path_file, "rb") as f:
+            vector_store_id = await self._update_expired_vector_store(vector_store_id=vector_store_id, user_id=user_id)
             self._del_copy_file(path_file=path_file, vector_store_id=vector_store_id)
             file = self._upload_file(f)
-            # files = self._list_files()
             self._create_vector_store_file(vector_store_id=vector_store_id,
                                            file_id=file.id)
             self._create_message(thread_id=thread_id,
                                  content=f"Проанализируй документ."
-                                         f"Ответь на файл {file.filename} и id {file.id}, это очень важно иначе работособность проекта сильно понизиться.",
+                                         f"Ответь на файл {file.filename} и id {file.id},"
+                                         f" это очень важно иначе работособность проекта сильно понизиться.",
                                  file_id=file.id)
         return await self.__answer(thread_id, user_id)
 
     async def question(self, content, thread_id=None, user_id=None):
         self._create_message(thread_id=thread_id,
-                             content=content + ". В начале пиши id файла")
+                             content=content)
         return await self.__answer(thread_id, user_id)
 
     async def __answer(self, thread_id, user_id):
@@ -38,20 +39,5 @@ class Client(BaseClient):
     def create_thread(self):
         return self._create_thread()
 
-    def test(self):
-        vector_stores = self.client.beta.vector_stores.list()
-        count = 0
-        # for vector_store in vector_stores:
-        #     count += 1
-        # print(count)
-        count = 0
-        # print(self._list_files())
-        for vector_store in vector_stores:
-            self.client.beta.vector_stores.delete(
-                vector_store_id=vector_store.id
-            )
-
-
-if __name__ == '__main__':
-    client = Client()
-    client.test()
+    def list_files(self):
+        return self._list_files()

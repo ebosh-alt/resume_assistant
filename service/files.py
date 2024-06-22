@@ -9,7 +9,8 @@ from os import listdir
 from os.path import isfile, join
 from spire.doc import Document, FileFormat
 
-from data.config import BASE_PATH_PDF
+from data.config import BASE_PATH_PDF, file_lifetime
+from service.OpenAI import ChatGPT
 
 logger = logging.getLogger(__name__)
 
@@ -75,4 +76,13 @@ class CheckFile:
                     path_file = BASE_PATH_PDF + '/' + file
                     os.remove(path_file)
                 logger.info("Delete files: %s" % ",".join(all_files))
+
+                files_openai = ChatGPT.list_files()
+                for file in files_openai:
+                    file_create = file.created_at
+                    expired_date = (now - datetime.timedelta(days=file_lifetime)).timestamp()
+                    if file_create < expired_date:
+                        logger.info(f"Delete file: {file.id}")
+                        ChatGPT.delete_file(file_id=file.id)
+
             time.sleep(1 * 60 * 45)

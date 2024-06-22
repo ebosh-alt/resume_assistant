@@ -1,5 +1,5 @@
+import asyncio
 import logging
-import time
 
 from aiogram.enums import ChatAction
 from openai import OpenAI
@@ -10,6 +10,7 @@ from openai.types.beta.threads.message_create_params import Attachment
 from openai.types.beta.vector_stores import VectorStoreFile
 
 from data.config import OPENAI_API_KEY, ASSISTANT, bot
+from entity.database import users
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,27 @@ class BaseClient:
         )
         return vector_store
 
+    async def _update_expired_vector_store(self, user_id, vector_store_id):
+        try:
+            vector = self._retrieve_vector_store(vector_store_id)
+            vector_store_id = vector.id
+            if vector.status == "expired":
+                vector = self._create_vector_store(user_id)
+                vector_store_id = vector.id
+                user = await users.get(user_id)
+                user.vector_store_id = vector_store_id
+                await users.update(user)
+        except Exception as ex:
+            logger.info(ex)
+            vector = self._create_vector_store(user_id)
+            vector_store_id = vector.id
+            user = await users.get(user_id)
+            user.vector_store_id = vector_store_id
+            await users.update(user)
+        return vector_store_id
+
     def _create_vector_store_file(self, vector_store_id, file_id):
+
         vector_store_file = self.client.beta.vector_stores.files.create(
             vector_store_id=vector_store_id,
             file_id=file_id
@@ -111,7 +132,7 @@ class BaseClient:
             logger.info(f"Retrieved run: {run.id}, run status: {run.status}")
             if run.status == "incomplete" or run.status == "failed":
                 return "Произошла ошибка. Попробуйте чуть позже"
-            time.sleep(2)
+            await asyncio.sleep(2)
             if user_id:
                 await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING, request_timeout=2)
 
