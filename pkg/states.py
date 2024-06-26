@@ -11,7 +11,13 @@ class UserStates(StatesGroup):
 
 
 class AdminStates(StatesGroup):
-    ...
+    delete_subscriptions = State()
+    description_subscriptions = State()
+    count_request_subscriptions = State()
+    count_month_subscriptions = State()
+    count_week_subscriptions = State()
+    count_day_subscriptions = State()
+    amount_subscriptions = State()
 
 
 class ManageStates(StatesGroup):

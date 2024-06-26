@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Sequence
 
-from sqlalchemy import select, update, Row
+from sqlalchemy import select, update, Row, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import declarative_base
@@ -60,7 +60,10 @@ class BaseDB:
             sql = select(obj)
             if filters is not None:
                 for key in filters:
-                    sql = sql.where(key == filters[key])
+                    if key != "order_by":
+                        sql = sql.where(key == filters[key])
+                if filters.get("order_by") is not None:
+                    sql = sql.order_by(desc(filters["order_by"]))
             result = await session.execute(sql)
             return result.scalars().all()
 

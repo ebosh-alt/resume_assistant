@@ -6,6 +6,7 @@ from sqlalchemy import Column, String, Integer, DateTime
 
 from data.config import offset
 from .base import Base, BaseDB
+from ..StateModels import SubscriptionState
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,7 @@ class Subscription(Base):
                 "count_month": self.count_month,
                 "count_week": self.count_week,
                 "count_day": self.count_day,
+                "amount": self.amount,
                 "created_at": self.created_at
                 }
 
@@ -69,6 +71,11 @@ class Subscriptions(BaseDB):
         result = await self._get_objects(Subscription)
         return result
 
+    async def get_all_sorted(self):
+        filters = {"order_by": Subscription.amount}
+        result = await self._get_objects(Subscription, filters)
+        return result
+
     async def get_labeled_price(self) -> list[LabeledPrice]:
         all_subscriptions: list[Subscription] = await self._get_objects(Subscription)
         prices: list[LabeledPrice] = []
@@ -81,3 +88,12 @@ class Subscriptions(BaseDB):
         result = await self._get_attributes(Subscription, "amount")
         return result
 
+    async def create_subscription(self, subscription_state: SubscriptionState):
+        subscription = Subscription(description=subscription_state.description,
+                                    count_request=subscription_state.count_request,
+                                    count_month=subscription_state.count_month,
+                                    count_week=subscription_state.count_week,
+                                    count_day=subscription_state.count_day,
+                                    amount=subscription_state.amount)
+        await self.new(subscription)
+        return subscription

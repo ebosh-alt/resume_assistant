@@ -20,3 +20,5 @@ ASSISTANT = env("ASSISTANT")
 count_free_request = 3
 allowed_file_len = 30000
 file_lifetime = 7
+contact_us = "https://t.me/AilowSupportBot"
+ADMINS = [5191469996]

@@ -69,3 +69,9 @@ async def send_mes(id, response):
         else:
             await bot.send_message(chat_id=id,
                                    text=text)
+
+
+def transform_date(day, month, year):
+    months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+              'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
+    return f'{day} {months[int(month) - 1]} {year} года'

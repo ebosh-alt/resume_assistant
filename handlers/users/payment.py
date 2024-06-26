@@ -2,18 +2,18 @@ import datetime
 import logging
 
 from aiogram import Router, F
+from aiogram.enums import ParseMode
 from aiogram.types import Message, CallbackQuery, PreCheckoutQuery, LabeledPrice
 
 from data.config import bot, YKASSA_API_KEY, offset
 from entity.database import users, subscriptions, Subscription
-from service.GetMessage import get_mes
+from service.GetMessage import get_mes, get_text, transform_date
 from service.keyboards import Keyboards
 
 router = Router()
 logger = logging.getLogger(__name__)
 
 
-# @router.callback_query(F.data == "load_documents")
 async def no_subscription(message: CallbackQuery | Message, status: str = None):
     id = message.from_user.id
     if type(message) is Message:
@@ -27,18 +27,20 @@ async def no_subscription(message: CallbackQuery | Message, status: str = None):
         await bot.answer_callback_query(text=get_mes("end_subscription", no_subscription=True),
                                         callback_query_id=message.id,
                                         show_alert=True)
-    text = get_mes("subscriptions", subscriptions=await subscriptions.get_all())
+    text = get_text(get_mes("subscriptions", subscriptions=await subscriptions.get_all_sorted()))
     reply_markup = await Keyboards.payment_kb()
     if type(message) is Message:
         await bot.send_message(chat_id=id,
                                text=text,
-                               reply_markup=reply_markup)
+                               reply_markup=reply_markup,
+                               parse_mode=ParseMode.MARKDOWN_V2)
     else:
         message_id = message.message.message_id
         await bot.edit_message_text(chat_id=id,
                                     message_id=message_id,
                                     text=text,
-                                    reply_markup=reply_markup)
+                                    reply_markup=reply_markup,
+                                    parse_mode=ParseMode.MARKDOWN_V2)
 
 
 @router.callback_query(F.data.contains("subscriptions_"))
@@ -62,12 +64,6 @@ async def choice_amount(msg: CallbackQuery):
                            prices=prices,
                            start_parameter="start_parameter",
                            payload=f"{sbp.id}")
-
-
-def transform_date(day, month, year):
-    months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-              'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
-    return f'{day} {months[int(month) - 1]} {year} года'
 
 
 @router.pre_checkout_query()

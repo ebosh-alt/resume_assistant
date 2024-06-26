@@ -4,13 +4,22 @@ from aiogram.filters import Filter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, User, CallbackQuery
 
-from data.config import FORMAT_FILES, BASE_PATH_PDF, bot, allowed_file_len
+from data.config import FORMAT_FILES, BASE_PATH_PDF, bot, allowed_file_len, ADMINS
 from entity.database import users
 from handlers.users.exceptions import now_allowed_len_file, not_valid_file_format
 from handlers.users.payment import no_subscription
 from service import Files
 
 logger = logging.getLogger(__name__)
+
+
+class IsAdmin(Filter):
+    async def __call__(self, message: Message | CallbackQuery, event_from_user: User, state: FSMContext) -> bool:
+        print(event_from_user.id)
+        print(ADMINS)
+        if event_from_user.id in ADMINS:
+            return True
+        return False
 
 
 class ThereSubscription(Filter):

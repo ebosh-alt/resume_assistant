@@ -1,6 +1,6 @@
 import logging
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 
@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.message(Command("start"))
+@router.callback_query(F.data == "menu")
 async def start(message: Message | CallbackQuery):
     id = message.from_user.id
     user = await users.get(id)
@@ -26,11 +27,19 @@ async def start(message: Message | CallbackQuery):
                     vector_store_id=vector_store.id,
                     thread_id=thread.id)
         await users.new(user)
-    await bot.send_message(
-        chat_id=id,
-        text=get_mes("menu"),
-        reply_markup=Keyboards.menu_kb,
-    )
+    if type(message) is Message:
+        await bot.send_message(
+            chat_id=id,
+            text=get_mes("menu"),
+            reply_markup=Keyboards.menu_kb,
+        )
+    else:
+        await bot.edit_message_text(
+            chat_id=id,
+            message_id=message.message.message_id,
+            text=get_mes("menu"),
+            reply_markup=Keyboards.menu_kb,
+        )
 
 
 menu_rt = router

@@ -1,9 +1,9 @@
 import logging
 
 from aiogram import types
-from aiogram.types import LabeledPrice
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
+from data.config import contact_us
 from entity.database import subscriptions, Subscription
 
 logger = logging.getLogger(__name__)
@@ -59,15 +59,34 @@ class Builder:
 class Keyboards:
     menu_kb = Builder.create_keyboard({
         "Загрузить документы": "load_documents",
-        "Что ты умеешь?": "help"
+        "Мой остаток": "remains",
+        "Тарифы": "tariff",
+        "Связь с нами": contact_us,
+        "Возможности бота": "help",
+        "Q&A": "Q&A",
     })
     load_documents_kb = Builder.create_keyboard({"Загрузить документы": "load_documents"})
     go_payment_kb = Builder.create_keyboard({"Купить подписку": "pay_subscribe"})
+    back_menu_kb = Builder.create_keyboard({"Меню": "menu"})
+    menu_admin = Builder.create_keyboard({
+        "Тарифы": "admin_subscriptions"
+    })
+
+    back_to_subscriptions_kb = Builder.create_keyboard({
+        "Назад": "admin_subscriptions"
+    })
+    subscriptions_kb = Builder.create_keyboard({
+        "Просмотреть текущие": "watch_subscriptions",
+        "Создать тариф": "create_subscriptions",
+        "Удалить тариф": "delete_subscriptions",
+        "Назад": "menu_admin",
+    })
 
     @staticmethod
     async def payment_kb():
-        all_subscriptions: list[Subscription] = await subscriptions.get_all()
+        all_subscriptions: list[Subscription] = await subscriptions.get_all_sorted()
         buttons = {}
         for subscription in all_subscriptions:
             buttons[f"Купить за {subscription.amount}р"] = f"subscriptions_{subscription.id}"
+        buttons["Меню"] = "menu"
         return Builder.create_keyboard(buttons)
